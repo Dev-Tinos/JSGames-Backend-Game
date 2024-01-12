@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숫자 맞추기 게임</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+
+        #result {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>숫자 맞추기 게임</h1>
+<p>1에서 100 사이의 숫자를 맞춰보세요.</p>
+<label for="guess">숫자 입력:</label>
+<input type="number" id="guess" min="1" max="100">
+<button onclick="checkGuess()">확인</button>
+<p id="result"></p>
+
+<script>
+    // 게임에 사용될 변수 설정
+    const secretNumber = Math.floor(Math.random() * 100) + 1; // 1에서 100 사이의 랜덤 숫자 생성
+    let attempts = 0;
+
+    function checkGuess() {
+        const userGuess = parseInt(document.getElementById('guess').value);
+
+        if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
+            alert('1에서 100 사이의 숫자를 입력하세요.');
+            return;
+        }
+
+        attempts++;
+
+        if (userGuess === secretNumber) {
+            showResult(`축하합니다! ${attempts}번 만에 숫자를 맞추셨습니다.`);
+        } else {
+            const hint = userGuess < secretNumber ? '더 큰 숫자를 입력하세요.' : '더 작은 숫자를 입력하세요.';
+            showResult(`틀렸습니다. ${hint}`);
+        }
+    }
+
+    function showResult(message) {
+        document.getElementById('result').textContent = message;
+    }
+</script>
+</body>
+</html>
