@@ -267,7 +267,7 @@ function checkGameOver() {
 function gameover() {
     var finalScore = getMaxNum() + score;
     alert(
-        `[Game Over]\n${userId}님의 최종 점수\nMax: ` +
+        `[Game Over]\nMax: ` +
             getMaxNum() +
             "\nScore: " +
             score +
