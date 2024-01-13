@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Arrow Shooting Game</title>
   <style>
     canvas {
@@ -15,8 +15,8 @@
 <canvas id="gameCanvas" width="800" height="600"></canvas>
 
 <script>
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
 
   let gameStarted = false;
   let arrows = [];
@@ -24,6 +24,7 @@
   let targetRadius = 70;
   let score = 0;
   let random = 0;
+  let fps = 65;
 
   function drawStartButton() {
     const btnWidth = 150;
@@ -32,9 +33,15 @@
     const btnY = (canvas.height - btnHeight) / 2;
     ctx.fillStyle = "#830000";
     ctx.beginPath();
-    ctx.moveTo(btnX+80, btnY + btnHeight / 2 - 26);
+    ctx.moveTo(btnX + 80, btnY + btnHeight / 2 - 26);
     ctx.arcTo(btnX + btnWidth, btnY, btnX + btnWidth, btnY + btnHeight, 10);
-    ctx.arcTo(btnX + btnWidth, btnY + btnHeight, btnX, btnY + btnHeight, 10);
+    ctx.arcTo(
+            btnX + btnWidth,
+            btnY + btnHeight,
+            btnX,
+            btnY + btnHeight,
+            10
+    );
     ctx.arcTo(btnX, btnY + btnHeight, btnX, btnY, 10);
     ctx.arcTo(btnX, btnY, btnX + btnWidth, btnY, 10);
     ctx.fill();
@@ -53,13 +60,17 @@
       const btnHeight = 50;
       const btnX = (canvas.width - btnWidth) / 2;
       const btnY = (canvas.height - btnHeight) / 2;
-      if (x >= btnX && x <= btnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
+      if (
+              x >= btnX &&
+              x <= btnX + btnWidth &&
+              y >= btnY &&
+              y <= btnY + btnHeight
+      ) {
         startGame();
       }
       return;
     }
   }
-
 
   function startGame() {
     gameStarted = true;
@@ -78,9 +89,9 @@
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        "userId": "1",
-        "gameId": 53,
-        "gameScore": score
+        userId: "1",
+        gameId: 53,
+        gameScore: score,
       }),
     }).then((response) => {
       console.log(response);
@@ -105,7 +116,12 @@
     ctx.beginPath();
     var rectWidth = 2;
     var rectHeight = 120;
-    ctx.rect(-rectWidth / 2, -targetRadius - rectHeight, rectWidth, rectHeight);
+    ctx.rect(
+            -rectWidth / 2,
+            -targetRadius - rectHeight,
+            rectWidth,
+            rectHeight
+    );
     ctx.closePath(); // 경로 닫기
     ctx.fillStyle = "white";
     ctx.fill();
@@ -113,36 +129,35 @@
     var width = 120;
     var height = 20;
     ctx.beginPath();
-    ctx.moveTo(-5, -targetRadius-5); // 화살표 꼬리 시작점
-    ctx.lineTo(5, -targetRadius-5); // 화살표 꼬리 끝점
-    ctx.lineTo(0, -targetRadius+5); // 화살표 머리 끝점
+    ctx.moveTo(-5, -targetRadius - 5); // 화살표 꼬리 시작점
+    ctx.lineTo(5, -targetRadius - 5); // 화살표 꼬리 끝점
+    ctx.lineTo(0, -targetRadius + 5); // 화살표 머리 끝점
     ctx.closePath(); // 경로 닫기
     ctx.fillStyle = "white";
     ctx.fill();
 
     ctx.beginPath();
-    ctx.moveTo(0, -targetRadius-rectHeight+2);
-    ctx.lineTo(0, -targetRadius-rectHeight+10);
-    ctx.lineTo(5, -targetRadius-rectHeight+5);
-    ctx.lineTo(5, -targetRadius-rectHeight-2);
+    ctx.moveTo(0, -targetRadius - rectHeight + 2);
+    ctx.lineTo(0, -targetRadius - rectHeight + 10);
+    ctx.lineTo(5, -targetRadius - rectHeight + 5);
+    ctx.lineTo(5, -targetRadius - rectHeight - 2);
     ctx.closePath(); // 경로 닫기
     ctx.fillStyle = "white";
     ctx.fill();
 
     ctx.beginPath();
-    ctx.moveTo(0, -targetRadius-rectHeight+2);
-    ctx.lineTo(0, -targetRadius-rectHeight+10);
-    ctx.lineTo(-5, -targetRadius-rectHeight+5);
-    ctx.lineTo(-5, -targetRadius-rectHeight-2);
+    ctx.moveTo(0, -targetRadius - rectHeight + 2);
+    ctx.lineTo(0, -targetRadius - rectHeight + 10);
+    ctx.lineTo(-5, -targetRadius - rectHeight + 5);
+    ctx.lineTo(-5, -targetRadius - rectHeight - 2);
     ctx.closePath(); // 경로 닫기
     ctx.fillStyle = "white";
     ctx.fill();
 
     ctx.restore();
-
   }
 
-  function drawArrowTest(){
+  function drawArrowTest() {
     ctx.save();
     ctx.translate(canvas.width / 2, canvas.height / 2);
     ctx.rotate(0);
@@ -150,9 +165,9 @@
     var width = 120;
     var height = 20;
     ctx.beginPath();
-    ctx.moveTo(-5, -targetRadius-5); // 화살표 꼬리 시작점
-    ctx.lineTo(5, -targetRadius-5); // 화살표 꼬리 끝점
-    ctx.lineTo(0, -targetRadius+5); // 화살표 머리 끝점
+    ctx.moveTo(-5, -targetRadius - 5); // 화살표 꼬리 시작점
+    ctx.lineTo(5, -targetRadius - 5); // 화살표 꼬리 끝점
+    ctx.lineTo(0, -targetRadius + 5); // 화살표 머리 끝점
     ctx.closePath(); // 경로 닫기
     ctx.fillStyle = "red";
 
@@ -160,31 +175,34 @@
     ctx.restore();
   }
 
-
   function drawTarget() {
     ctx.beginPath();
-    ctx.arc(canvas.width / 2, canvas.height / 2, targetRadius, 0, Math.PI * 2);
+    ctx.arc(
+            canvas.width / 2,
+            canvas.height / 2,
+            targetRadius,
+            0,
+            Math.PI * 2
+    );
     ctx.fillStyle = "white";
     ctx.fill();
   }
 
-  function updatedraw(angle){
+  function updatedraw(angle) {
     targetAngle += angle;
-    arrows.forEach(arrow => {
+    arrows.forEach((arrow) => {
       arrow.angle = (arrow.angle + angle) % (Math.PI * 2);
     });
   }
 
   function updateGame() {
-    if(random > 50){
-      updatedraw(random/1000);
+    if (random > 50) {
+      updatedraw(random / 1000);
       random--;
-    }
-    else if(random > 0){
-      updatedraw(-random/1000);
+    } else if (random > 0) {
+      updatedraw(-random / 1000);
       random--;
-    }
-    else{
+    } else {
       random = Math.floor(Math.random() * 100);
     }
   }
@@ -199,19 +217,21 @@
   }
 
   function animate() {
-    if (!gameStarted) return;
+    setTimeout(function () {
+      if (!gameStarted) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawArrowTest();
-    drawTarget();
-    arrows.forEach(drawArrow);
-    drawScore();
-    updateGame();
-    requestAnimationFrame(animate);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawArrowTest();
+      drawTarget();
+      arrows.forEach(drawArrow);
+      drawScore();
+      updateGame();
+      requestAnimationFrame(animate);
+    }, 1000 / fps);
   }
 
-  document.addEventListener('keydown', function(event) {
-    if (event.key === 'ArrowDown' || event.key === ' ') {
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "ArrowDown" || event.key === " ") {
       if (gameStarted) {
         arrows.push({ angle: 0 });
         checkCollision();
@@ -220,9 +240,9 @@
     }
   });
   drawStartButton();
-  canvas.addEventListener('click', ClickGameStartButton);
-  document.addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
+  canvas.addEventListener("click", ClickGameStartButton);
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
       if (!gameStarted) {
         startGame();
       }
