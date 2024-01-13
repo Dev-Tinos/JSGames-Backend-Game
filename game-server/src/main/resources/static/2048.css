@@ -1,0 +1,49 @@
+td {
+    text-align: center;
+    vertical-align: center;
+    font-size: 18pt;
+    font-weight: bold;
+    height: 70px;
+    width: 70px;
+    color: #684a23;
+    background-color: #fbeddc;
+}
+body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+#container {
+    width: fit-content;
+    height: auto;
+    margin: auto;
+    background-color: #fbeddc;
+    align-items: center;
+}
+
+#titlebox {
+    width: 300px;
+    align-items: center;
+}
+#title {
+    font-size: 30pt;
+    font-weight: bold;
+    color: #684a23;
+    margin: 0px;
+    text-align: center;
+}
+#scorebox {
+    margin: 0px;
+    border: 4px #bbada0;
+    p {
+        margin: 10px;
+    }
+}
+#board {
+    background-color: #bbada0;
+    margin: auto;
+    td {
+        border-style: solid;
+        border-color: #bbada0;
+    }
+}
