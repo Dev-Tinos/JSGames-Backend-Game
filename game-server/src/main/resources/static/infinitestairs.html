@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arrow Shooting Game</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+      background-color: #000000;
+    }
+  </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+
+<script>
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+
+  let gameStarted = false;
+  let score = 0;
+  let map = [];
+  let position = 0;
+  let hi=0;
+  let timeLeft = 8;
+  let defaultTime = timeLeft;
+  let timelec = 0.01;
+
+  function drawStartButton() {
+    const btnWidth = 150;
+    const btnHeight = 50;
+    const btnX = (canvas.width - btnWidth) / 2;
+    const btnY = (canvas.height - btnHeight) / 2;
+    ctx.fillStyle = "#830000";
+    ctx.beginPath();
+    ctx.moveTo(btnX+80, btnY + btnHeight / 2 - 26);
+    ctx.arcTo(btnX + btnWidth, btnY, btnX + btnWidth, btnY + btnHeight, 10);
+    ctx.arcTo(btnX + btnWidth, btnY + btnHeight, btnX, btnY + btnHeight, 10);
+    ctx.arcTo(btnX, btnY + btnHeight, btnX, btnY, 10);
+    ctx.arcTo(btnX, btnY, btnX + btnWidth, btnY, 10);
+    ctx.fill();
+    ctx.font = "24px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText("게임 시작", btnX + 20, btnY + 35);
+  }
+
+  function ClickGameStartButton(event) {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    if (!gameStarted) {
+      const btnWidth = 150;
+      const btnHeight = 50;
+      const btnX = (canvas.width - btnWidth) / 2;
+      const btnY = (canvas.height - btnHeight) / 2;
+      if (x >= btnX && x <= btnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
+        startGame();
+      }
+      return;
+    }
+  }
+
+
+  function startGame() {
+    gameStarted = true;
+    score = 0;
+    map = [];
+    hi=0;
+    makeMap();
+    map[0] = 1;
+    map[0] = 0;
+    position=0;
+    timeLeft = defaultTime;
+    timelec=0.01;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawScore();
+    drawGame();
+    animate();
+  }
+
+  function endGame() {
+    gameStarted = false;
+
+    fetch("http://54.210.228.54:8080/log", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        "userId": "1",
+        "gameId": 60,
+        "gameScore": score
+      }),
+    }).then((response) => {
+      console.log(response);
+    });
+    drawStartButton();
+  }
+
+  function drawScore() {
+    ctx.font = "24px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText("Score: " + score, 10, 30);
+  }
+
+  let state=0;
+
+  function animate() {
+    if (!gameStarted) return;
+
+    if(state==1){
+      timelec+=0.0001;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hi++;
+      state=0;
+      if(position==map[hi-1]){
+        score++;
+      }
+      else{
+        hi--;
+        drawScore();
+        drawGame();
+        endGame();
+        return;
+      }
+      drawScore();
+      drawGame();
+      animate();
+    }
+    drawbar();
+    drawTimebar();
+    requestAnimationFrame(animate);
+
+  }
+
+  //0.1초마다 실행되는 함수
+  function time(){
+    if(timeLeft > timelec){
+      timeLeft -= timelec;
+    }
+    else{
+      endGame();
+    }
+  }
+  setInterval(time, 10);
+
+  function drawbar(){
+    // 바의 위치와 크기 설정
+    const barWidth = 400;
+    const barHeight = 20;
+    const barX = (canvas.width - barWidth) / 2;
+    const barY = canvas.height - 150; // 캔버스 하단에서 30px 위에 위치
+
+    // 바의 색상 설정
+    ctx.fillStyle = '#FFFFFF'; // 하얀색으로 설정
+
+    // 바 그리기
+    ctx.fillRect(barX, barY, barWidth, barHeight);
+  }
+
+  function drawTimebar() {
+    // 바의 너비를 시간에 따라 조정
+    const barWidth = 395 * (timeLeft / defaultTime);
+    const barHeight = 17;
+    const barX = (canvas.width - 395) / 2; // 바의 x 좌표를 고정
+    const barY = canvas.height - 148; // 캔버스 하단에서 450px 위에 위치
+
+    // 선형 그라데이션 생성
+    var gradient = ctx.createLinearGradient(barX, barY, barX + barWidth, barY);
+
+    // 그라데이션에 여러 색상 추가
+    gradient.addColorStop(0, 'orange');
+    gradient.addColorStop(0.5, 'yellow');
+    gradient.addColorStop(1, 'orange');
+
+    // 바의 색상으로 그라데이션 설정
+    ctx.fillStyle = gradient;
+
+    // 바 그리기
+    ctx.fillRect(barX, barY, barWidth, barHeight);
+  }
+
+  function drawGame(){
+    drawMap(hi);
+    drawPlayer();
+  }
+
+  function drawPlayer(){
+    if(position==1){ctx.beginPath();        // 경로 생성 시작
+      ctx.moveTo(canvas.width/2-35, canvas.height/2+60);     // 시작점으로 이동 (x, y)
+      ctx.lineTo(canvas.width/2-25, canvas.height/2+55);    // 선 그리기 (x, y)
+      ctx.lineTo(canvas.width/2-25, canvas.height/2+65);   // 또 다른 선 그리기 (x, y)
+      ctx.closePath();        // 현재의 서브 경로를 닫음
+
+      ctx.lineWidth = 2;      // 선의 너비 설정
+      ctx.strokeStyle = 'black';  // 선의 색상 설정
+      ctx.stroke();               // 선 그리기
+
+      ctx.fillStyle = 'blue';     // 채우기 색상 설정
+      ctx.fill();                 // 삼각형 내부 채우기
+
+      ctx.fillRect(canvas.width/2-25, canvas.height/2+59, 10, 2);}
+    else{
+      ctx.beginPath();        // 경로 생성 시작
+      ctx.moveTo(canvas.width/2-5, canvas.height/2+60);     // 시작점으로 이동 (x, y)
+      ctx.lineTo(canvas.width/2-15, canvas.height/2+55);    // 선 그리기 (x, y)
+      ctx.lineTo(canvas.width/2-15, canvas.height/2+65);   // 또 다른 선 그리기 (x, y)
+      ctx.closePath();        // 현재의 서브 경로를 닫음
+
+      ctx.lineWidth = 2;      // 선의 너비 설정
+      ctx.strokeStyle = 'black';  // 선의 색상 설정
+      ctx.stroke();               // 선 그리기
+
+      ctx.fillStyle = 'blue';     // 채우기 색상 설정
+      ctx.fill();                 // 삼각형 내부 채우기
+
+      ctx.fillRect(canvas.width/2-25, canvas.height/2+59, 10, 2);
+    }
+
+    ctx.fillStyle = "red";
+    ctx.fillRect(canvas.width/2-25, canvas.height/2+70, 10, 10);
+  }
+  function makeMap(){
+    for(var i=0;i<50000;i++){
+      let ran = Math.floor(Math.random() * 2);
+      map.push(ran);
+    }
+  }
+
+  function drawMap(pos){
+    let x = 0;
+    let y = 0;
+    for(var i=pos;i<50000;i++){
+      if(map[i] == 0){
+        ctx.fillStyle = "grey";
+        ctx.fillRect(canvas.width/2-40+x, canvas.height/2+80+y, 40, 10);
+        x += 40;
+        y -= 20;
+      }
+      else{
+        ctx.fillStyle = "grey";
+        ctx.fillRect(canvas.width/2-40+x, canvas.height/2+80+y, 40, 10);
+        x -= 40;
+        y -= 20;
+      }
+    }
+
+  }
+
+  drawStartButton();
+  canvas.addEventListener('click', ClickGameStartButton);
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+      if (!gameStarted) {
+        startGame();
+      }
+    }
+  });
+
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowUp') {
+      if (gameStarted) {
+        timeLeft+=0.2;
+        state=1;
+      }
+    }
+  });
+
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'z') {
+      if (gameStarted) {
+        if(position==0){
+          position=1;
+        }
+        else{
+          position=0;
+        }
+        timeLeft+=0.2;
+        state=1;
+      }
+    }
+  });
+
+</script>
+</body>
+</html>
