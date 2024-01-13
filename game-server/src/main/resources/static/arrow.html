@@ -173,7 +173,7 @@
   function checkCollision() {
     drawArrow(arrows[score]);
     for (let i = 0; i < arrows.length - 1; i++) {
-      if (Math.abs(arrows[i].angle - arrows[score].angle) < 0.15) {
+      if (Math.abs(arrows[i].angle - arrows[score].angle) < 0.1) {
         endGame();
       }
     }
