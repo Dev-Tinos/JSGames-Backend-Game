@@ -11,7 +11,7 @@ var tableID = Array(
     Array("30", "31", "32", "33")
 );
 var score;
-var userId = "";
+var userId = null;
 window.addEventListener("message", function (event) {
     document.getElementById("receivedData").textContent = event.data;
     userId = event.data;
@@ -267,7 +267,7 @@ function checkGameOver() {
 function gameover() {
     var finalScore = getMaxNum() + score;
     alert(
-        "[Game Over]\nMax: " +
+        `[Game Over]\n${userId}님의 최종 점수\nMax: ` +
             getMaxNum() +
             "\nScore: " +
             score +
