@@ -14,9 +14,7 @@ var score;
 var userId = null;
 window.addEventListener("message", function (event) {
     document.getElementById("receivedData").textContent = event.data;
-    document.getElementById("receivedData").innerHTML = event.data;
     userId = event.data;
-    this.alert(userId);
 });
 
 // 키보드 입력 처리
