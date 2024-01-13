@@ -1,8 +1,8 @@
 // 캔버스 설정
 let canvas = document.createElement("canvas");
 let ctx = canvas.getContext("2d");
-canvas.width = 1006;
-canvas.height = 624;
+canvas.width = 960;
+canvas.height = 600;
 document.body.appendChild(canvas);
 
 // 게임 상태 변수
@@ -197,22 +197,23 @@ function activateShip() {
 }
 
 function update() {
-    if ("ArrowRight" in keysDown) {
+    if ("d" in keysDown) {
         spaceshipX += 3;
         spaceshipX = Math.min(spaceshipX, canvas.width - 40);
     }
-    if ("ArrowLeft" in keysDown) {
+    if ("a" in keysDown) {
         spaceshipX -= 3;
         spaceshipX = Math.max(spaceshipX, 0);
     }
-    if ("ArrowUp" in keysDown) {
+    if ("w" in keysDown) {
         spaceshipY -= 3;
         spaceshipY = Math.max(spaceshipY, 0);
     }
-    if ("ArrowDown" in keysDown) {
+    if ("s" in keysDown) {
         spaceshipY += 3;
         spaceshipY = Math.min(spaceshipY, canvas.height - 40);
     }
+    
 
     enemyList.forEach((e) => e.update());
     bladeSkill.update();
@@ -256,8 +257,8 @@ function addRestartButton() {
     restartButton = document.createElement("button");
     restartButton.textContent = "다시하기";
     restartButton.style.position = "absolute";
-    restartButton.style.left = "22%";
-    restartButton.style.top = "36%";
+    restartButton.style.left = "50%";
+    restartButton.style.top = "60%";
     restartButton.style.transform = "translateX(-50%)";
     restartButton.style.padding = "10px 20px";
     restartButton.style.fontSize = "20px";
@@ -297,13 +298,46 @@ function main() {
         if (Math.random() < 0.001) {
             activateBlade();
         }
-        if (Math.random() < 0.002) {
+        if (Math.random() < 0.001) {
             activateShip();
         }
     } else {
         ctx.drawImage(gameoverImg, 310, 100, 400, 400);
         addRestartButton();
     }
+}
+
+// 게임 종료 시, 점수를 서버로 보내는 함수
+function sendScoreToServer(score) {
+    // 서버 URL
+    const serverUrl = "http://54.210.228.54:8080/log";
+
+    // 요청 본문 데이터
+    const requestData = {
+        userId: "1",
+        gameId: 56,
+        gameScore: score,
+    };
+
+    // POST 요청 보내기
+    fetch(serverUrl, {
+        method: "POST", // POST 메서드 사용
+        headers: {
+            "Content-Type": "application/json", // JSON 형식으로 데이터 전송
+        },
+        body: JSON.stringify(requestData), // 요청 본문에 데이터(JSON 형식) 추가
+    })
+    .then((response) => {
+        // 응답을 처리하거나 확인
+        if (response.ok) {
+            console.log("게임 점수 전송 성공");
+        } else {
+            console.error("게임 점수 전송 실패");
+        }
+    })
+    .catch((error) => {
+        console.error("게임 점수 전송 중 오류 발생:", error);
+    });
 }
 
 // 게임 초기화 및 실행
