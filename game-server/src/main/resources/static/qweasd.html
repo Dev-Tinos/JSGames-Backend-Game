@@ -66,6 +66,7 @@
   function startGame() {
     gameStarted = true;
     score = 0;
+    difine = 5;
     timeLeft = defaultTime;
     generateSequence(); // 게임 시작 시 문자 시퀀스 생성
     animate();
@@ -76,7 +77,6 @@
     gameStarted = false;
     defaultTime = 8;
     timeLeft = 8;
-    difine = 5;
     fetch("http://54.210.228.54:8080/log", {
       method: "POST",
       headers: {
@@ -206,7 +206,7 @@
     }
   }
 
-  let difine = 3;
+  let difine = 5;
   function checkCharacter(key) {
     if(difine<2){
       difine--;
@@ -222,7 +222,7 @@
       if (currentIndex === currentSequence.length) {
         difine=5;
         currentIndex = 0;
-        defaultTime -= Math.log(score) * 2.4; // 시간을 초기화합니다.
+        defaultTime = 8 - Math.log(score) * 1.4; // 시간을 초기화합니다.
         timeLeft = defaultTime;
         generateSequence(); // 새로운 문자 시퀀스 생성
       }
