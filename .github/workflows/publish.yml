@@ -18,7 +18,9 @@ jobs:
           distribution: 'temurin'
 
       - name: build with gradle
-        run: ./gradlew build
+        run: |
+          cd ./game-server
+          ./gradlew build
 
       - name: Docker Login
         uses: docker/login-action@v1
@@ -29,8 +31,8 @@ jobs:
       - name: Docker Build and Push
         uses: docker/build-push-action@v2
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./game-server
+          file: game-server/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.REPOSITORY_NAME }}
 
