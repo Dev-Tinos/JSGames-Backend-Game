@@ -13,7 +13,6 @@ var tableID = Array(
 var score;
 var userId = null;
 window.addEventListener("message", function (event) {
-    // document.getElementById("receivedData").innerHTML = event.data;
     document.getElementById("receivedData").textContent = event.data;
     userId = event.data;
 });
