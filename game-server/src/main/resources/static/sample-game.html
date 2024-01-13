@@ -41,6 +41,19 @@
         attempts++;
 
         if (userGuess === secretNumber) {
+            fetch("http://54.210.228.54:8080/log", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    "userId": "1",
+                    "gameId": 51,
+                    "gameScore": attempts
+                }),
+            }).then((response) => {
+                console.log(response);
+            });
             showResult(`축하합니다! ${attempts}번 만에 숫자를 맞추셨습니다.`);
         } else {
             const hint = userGuess < secretNumber ? '더 큰 숫자를 입력하세요.' : '더 작은 숫자를 입력하세요.';
