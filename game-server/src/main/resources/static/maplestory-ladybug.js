@@ -1,8 +1,8 @@
 // 캔버스 설정
 let canvas = document.createElement("canvas");
 let ctx = canvas.getContext("2d");
-canvas.width = 960;
-canvas.height = 600;
+canvas.width = 980;
+canvas.height = 580;
 document.body.appendChild(canvas);
 
 // 게임 상태 변수
@@ -226,6 +226,38 @@ function update() {
     totalElapsedTime = elapsedTime; // 총 버틴 시간 업데이트
 }
 
+// 게임 종료 시, 점수를 서버로 보내는 함수
+function sendScoreToServer(activationTime) {
+    // 서버 URL
+    const serverUrl = "http://54.210.228.54:8080/log";
+
+    // 요청 본문 데이터
+    const requestData = {
+        userId: "1",
+        gameId: 56,
+        gameScore: activationTime,
+    };
+
+    // POST 요청 보내기
+    fetch(serverUrl, {
+        method: "POST", // POST 메서드 사용
+        headers: {
+            "Content-Type": "application/json", // JSON 형식으로 데이터 전송
+        },
+        body: JSON.stringify(requestData), // 요청 본문에 데이터(JSON 형식) 추가
+    })
+    .then((response) => {
+        // 응답을 처리하거나 확인
+        if (response.ok) {
+            console.log("게임 점수 전송 성공");
+        } else {
+            console.error("게임 점수 전송 실패");
+        }
+    })
+    .catch((error) => {
+        console.error("게임 점수 전송 중 오류 발생:", error);
+    });
+}
 // 게임 렌더링 함수
 function render() {
     ctx.globalAlpha = 0.5;
@@ -304,40 +336,9 @@ function main() {
     } else {
         ctx.drawImage(gameoverImg, 310, 100, 400, 400);
         addRestartButton();
+        sendScoreToServer(totalElapsedTime);
+
     }
-}
-
-// 게임 종료 시, 점수를 서버로 보내는 함수
-function sendScoreToServer(score) {
-    // 서버 URL
-    const serverUrl = "http://54.210.228.54:8080/log";
-
-    // 요청 본문 데이터
-    const requestData = {
-        userId: "1",
-        gameId: 56,
-        gameScore: score,
-    };
-
-    // POST 요청 보내기
-    fetch(serverUrl, {
-        method: "POST", // POST 메서드 사용
-        headers: {
-            "Content-Type": "application/json", // JSON 형식으로 데이터 전송
-        },
-        body: JSON.stringify(requestData), // 요청 본문에 데이터(JSON 형식) 추가
-    })
-    .then((response) => {
-        // 응답을 처리하거나 확인
-        if (response.ok) {
-            console.log("게임 점수 전송 성공");
-        } else {
-            console.error("게임 점수 전송 실패");
-        }
-    })
-    .catch((error) => {
-        console.error("게임 점수 전송 중 오류 발생:", error);
-    });
 }
 
 // 게임 초기화 및 실행
