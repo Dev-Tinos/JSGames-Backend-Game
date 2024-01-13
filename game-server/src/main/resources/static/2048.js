@@ -11,6 +11,11 @@ var tableID = Array(
     Array("30", "31", "32", "33")
 );
 var score;
+var userId = "";
+window.addEventListener("message", function (event) {
+    document.getElementById("receivedData").textContent = event.data;
+    userId = event.data;
+});
 
 // 키보드 입력 처리
 document.onkeydown = keyDownEventHandler;
@@ -269,18 +274,22 @@ function gameover() {
             "\n최종점수 : " +
             finalScore
     );
-    fetch("http://54.210.228.54:8080/log", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            userId: "1",
-            gameId: 54,
-            gameScore: score + getMaxNum(),
-        }),
-    }).then((response) => {
-        console.log(response);
-    });
-    init();
+    if (userId === null) {
+        init();
+    } else {
+        fetch("http://54.210.228.54:8080/log", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                userId: userId,
+                gameId: 54,
+                gameScore: score + getMaxNum(),
+            }),
+        }).then((response) => {
+            console.log(response);
+        });
+        init();
+    }
 }
