@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Fish Travle</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body style="width: 100%; height: 100%; display: flex; justify-content: center;">
+<canvas id="canvas"></canvas>
+<script>
+    const canvas = document.getElementById("canvas");
+
+    // background color is black
+    canvas.style.backgroundColor = "black";
+
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth - 100;
+    canvas.height = window.innerHeight - 100;
+
+    var UIManager = {
+        startButton: null,
+    }
+
+    class Button {
+        constructor(x, y, width, height, color, text, action) {
+            this.btnWidth = width;
+            this.btnHeight = height;
+            this.x = x + (canvas.width - this.btnWidth) / 2;
+            this.y = y + (canvas.height - this.btnHeight) / 2;
+            this.text = text;
+            this.action = action;
+        }
+
+        draw() {
+            ctx.fillStyle = "#1c3af6";
+            ctx.fillRect(this.x, this.y, this.btnWidth, this.btnHeight);
+
+
+            ctx.fillStyle = "white";
+            ctx.font = "24px Arial";
+            ctx.fillText(this.text, this.x + this.btnWidth / 5, this.y + this.btnHeight - 15);
+        }
+
+        isClicked(x, y) {
+            if (x >= this.x && x <= this.x + this.btnWidth && y >= this.y && y <= this.y + this.btnHeight) {
+                return true;
+            }
+            return false;
+        }
+
+        action() {
+            this.action();
+        }
+    }
+
+    class Player {
+
+        
+        // on the ground
+        static player = new Player(30, canvas.height / 2 + 100, 100, 50, "red");
+
+        // 관성
+        static inertia = 0.;
+
+        // 최대 관성
+        static maxInertia = 10;
+
+
+        constructor(x, y, width, height, color) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.color = color;
+
+            this.fishImage = new Image();
+
+            this.fishImage.src = "./FishTravleImg/fish.png";
+
+            this.draw();
+        }
+
+        draw() {
+
+            // ctx.fillStyle = this.color;
+            // ctx.fillRect(this.x, this.y, this.width, this.height);
+
+            ctx.fillStyle = this.color;
+            ctx.drawImage(this.fishImage, this.x - this.width / 2, this.y - this.height / 2, this.width * 2, this.height * 2);
+        }
+
+        move() {
+            Player.player.y += Player.inertia;
+
+            if (input.space) {
+                // this.isJumping = true;
+                Player.inertia -= 0.3;
+            } else {
+                Player.inertia += 0.3;
+            }
+
+            if (Player.inertia > Player.maxInertia) {
+                Player.inertia = Player.maxInertia;
+            }
+
+            // 위 아래를 벗어나면 게임 종료
+            if (Player.player.y < 0 || Player.player.y > canvas.height - Player.player.height) {
+                GameManager.gameStarted = false;
+                Player.inertia = 0;
+                GameManager.endGame();
+            }
+        }
+    }
+
+    // 장애물
+    class Obstacle {
+        static obsSpeed = 3;
+
+        static obsTimer = 100;
+
+
+        // 장애물 리스트
+        static obstacles = [];
+
+        static maxWidth = 50;
+
+        static minWidth = 10;
+
+        static maxHeight = 300;
+
+        static minHeight = 50;
+
+        // 색 리스트
+        static colors = ["blue", "green", "yellow", "white", "purple", "orange"];
+
+        // 장애물 맨 오른쪽 랜덤한 허공 에서 생성
+        // width, height, color 모두 랜덤
+        constructor() {
+            this.width = Math.random() * (Obstacle.maxWidth - Obstacle.minWidth) + Obstacle.minWidth;
+            this.height = Math.random() * (Obstacle.maxHeight - Obstacle.minHeight) + Obstacle.minHeight;
+            this.color = Obstacle.colors[Math.floor(Math.random() * Obstacle.colors.length)];
+            this.x = canvas.width;
+            this.y = Math.random() * (canvas.height - this.height);
+            console.log(this.y)
+
+            Obstacle.obstacles.push(this);
+        }
+
+        move() {
+            this.x -= Obstacle.obsSpeed;
+
+            // 장애물이 왼쪽으로 벗어나면 삭제
+            if (this.x + this.width < 0) {
+                this.destroy();
+            }
+        }
+
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+
+        destroy() {
+            Obstacle.obstacles.splice(Obstacle.obstacles.indexOf(this), 1);
+        }
+
+        collision() {
+            if (
+                Player.player.x < this.x + this.width &&
+                Player.player.x + Player.player.width > this.x &&
+                Player.player.y < this.y + this.height &&
+                Player.player.y + Player.player.height > this.y
+            ) {
+                GameManager.gameStarted = false;
+                Player.inertia = 0;
+                GameManager.endGame();
+            }
+        }
+    }
+
+    GameManager = {
+        gameStarted: false,
+
+        // 첫 화면
+        initGame() {
+            this.drawScore();
+            this.drawStartButton();
+
+            Player.player.draw();
+        },
+
+        // 게임 시작 버튼
+        drawStartButton() {
+
+            UIManager["startButton"] = new Button(0, 0, 150, 50, "#1c3af6", "게임 시작",
+                () => {
+                    GameManager.startGame();
+                });
+
+            UIManager["startButton"].draw();
+
+            canvas.addEventListener("click", (event) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+                if (UIManager["startButton"].isClicked(x, y)) {
+                    UIManager["startButton"].action();
+                }
+            });
+
+        },
+
+        // 다시 하기 버튼
+        drawRestartButton() {
+            UIManager["restartButton"] = new Button(0, 0, 150, 50, "#1c3af6", "다시 하기",
+                () => {
+                    location.reload();
+                });
+
+            UIManager["restartButton"].draw();
+
+            canvas.addEventListener("click", (event) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+                if (UIManager["restartButton"].isClicked(x, y)) {
+                    UIManager["restartButton"].action();
+                }
+            });
+        },
+
+
+        drawScore() {
+            ctx.font = "24px Arial";
+            ctx.fillStyle = "white";
+            ctx.fillText("Score: " + GameManager.score, 10, 30);
+        },
+
+        // 게임 시작
+        startGame() {
+            this.gameStarted = true;
+            this.score = 0;
+            console.log("game started");
+            frame();
+        },
+
+        // 게임 종료
+        endGame() {
+            this.gameStarted = false;
+            this.drawRestartButton();
+            fetch("http://54.210.228.54:8080/log", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    "userId": "1",
+                    "gameId": 59,
+                    "gameScore": GameManager.score
+                }),
+            }).then((response) => {
+                console.log(response);
+            });
+        },
+
+        // Game Score
+        score: 0,
+    }
+
+    input = {
+        up: false,
+        down: false,
+        left: false,
+        right: false,
+        space: false
+    }
+
+    // event listener (left, right, up, down)
+    // 이벤트 리스너 등록
+    document.addEventListener('keypress'
+        , function (event) {
+
+            if (event.key === 'a') {
+                input.left = true;
+            }
+            if (event.key === 'd') {
+                input.right = true;
+            }
+            if (event.key === 'w') {
+                input.up = true;
+            }
+            if (event.key === 's') {
+                input.down = true;
+            }
+        });
+
+    document.addEventListener('keydown',
+        function (event) {
+            // space bar
+            if (event.key === ' ') {
+                input.space = true;
+            }
+        });
+
+    document.addEventListener('keyup'
+        , function (event) {
+            if (event.key === 'a') {
+                input.left = false;
+            }
+            if (event.key === 'd') {
+                input.right = false;
+            }
+            if (event.key === 'w') {
+                input.up = false;
+            }
+            if (event.key === 's') {
+                input.down = false;
+            }
+            if (event.key === ' ') {
+                input.space = false;
+            }
+        });
+
+
+    // 총알 class
+
+
+    // frame function
+    var timer = 0;
+
+    var fps = 60;
+
+    function frame() {
+        setTimeout(function () {
+            if (!GameManager.gameStarted) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            GameManager.drawScore();
+
+
+            Player.player.move();
+            Player.player.draw();
+
+            Obstacle.obstacles.forEach((obstacle) => {
+                obstacle.move();
+                obstacle.draw();
+                obstacle.collision();
+            });
+
+            if (timer % Obstacle.obsTimer === 0) {
+                Obstacle.obstacles.push(new Obstacle());
+            }
+
+            if (timer % 60 === 1) {
+                GameManager.score++;
+
+                if (GameManager.score % 10 === 0) {
+                    Obstacle.obsSpeed += 1;
+                    Obstacle.obsTimer -= 10;
+                }
+            }
+
+
+            requestAnimationFrame(frame);
+
+
+            timer++;
+        }, 1000 / fps);
+    }
+
+    GameManager.initGame();
+
+    // frame();
+
+</script>
+</body>
+
+</html>
