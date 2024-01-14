@@ -26,6 +26,7 @@
   let timeLeft = 8;
   let defaultTime = timeLeft;
   let timelec = 0.01;
+  var intervalID;
 
   function drawStartButton() {
     const btnWidth = 150;
@@ -75,6 +76,8 @@
 
   function startGame() {
     gameStarted = true;
+    intervalID = setInterval(time, 10);
+
     score = 0;
     map = [];
     hi = 0;
@@ -93,8 +96,9 @@
   function endGame() {
     gameStarted = false;
     // Interval clear
-    clearInterval(time);
+    clearInterval(intervalID);
 
+    console.log(score);
     fetch("http://54.210.228.54:8080/log", {
       method: "POST",
       headers: {
@@ -153,7 +157,6 @@
       endGame();
     }
   }
-  setInterval(time, 10);
 
   function drawbar() {
     // 바의 위치와 크기 설정
