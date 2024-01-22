@@ -11,11 +11,14 @@ var tableID = Array(
     Array("30", "31", "32", "33")
 );
 var score;
-var userId = null;
-window.addEventListener("message", function (event) {
-    document.getElementById("receivedData").textContent = event.data;
-    userId = event.data;
-});
+// var userId = null;
+// window.addEventListener("message", function (event) {
+//     document.getElementById("receivedData").textContent = event.data;
+//     userId = event.data;
+// });
+
+const urlParams = new URLSearchParams(window.location.search);
+var userId = urlParams.get("userId");
 
 // 키보드 입력 처리
 document.onkeydown = keyDownEventHandler;
