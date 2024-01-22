@@ -21,18 +21,22 @@ window.addEventListener("message", function (event) {
 document.onkeydown = keyDownEventHandler;
 function keyDownEventHandler(e) {
     switch (e.keyCode) {
-        case 38:
+        case 38: // up
+        case 87: // w
             moveDir(1);
-            break; //up
-        case 40:
+            break;
+        case 40: // down
+        case 83: // s
             moveDir(3);
-            break; //down
-        case 37:
+            break;
+        case 37: // left
+        case 65: // a
             moveDir(0);
-            break; //left
-        case 39:
+            break;
+        case 39: // right
+        case 68: // d
             moveDir(2);
-            break; //right
+            break;
     }
 }
 
