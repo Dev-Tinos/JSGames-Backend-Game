@@ -259,6 +259,10 @@
         // 게임 종료
         endGame() {
             this.gameStarted = false;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            var userId = urlParams.get("userId");
+
             this.drawRestartButton();
             fetch("http://54.210.228.54:8080/log", {
                 method: "POST",
@@ -266,7 +270,7 @@
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    "userId": "1",
+                    "userId": userId,
                     "gameId": 59,
                     "gameScore": GameManager.score
                 }),
