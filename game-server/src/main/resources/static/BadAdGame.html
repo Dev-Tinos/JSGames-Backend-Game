@@ -1,245 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
 
-<head>
-    <meta charset="UTF-8">
-</head>
+  <body
+    style="
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      overflow: hidden;
+    "
+  >
+    <canvas id="canvas"></canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
 
-<body style="width: 100%; height: 100%; display: flex; justify-content: center; overflow: hidden">
-<canvas id="canvas"></canvas>
-<script>
-    const canvas = document.getElementById("canvas");
+      // background color is black
+      canvas.style.backgroundColor = "black";
 
-    // background color is black
-    canvas.style.backgroundColor = "black";
+      const ctx = canvas.getContext("2d");
 
-    const ctx = canvas.getContext("2d");
+      canvas.width = 500;
+      canvas.height = window.innerHeight - 50;
 
-    canvas.width = 500;
-    canvas.height = window.innerHeight - 50;
-
-    GameManager = {
+      GameManager = {
         gameStarted: false,
 
         // 첫 화면
         // 게임 시작 버튼
         drawStartButton() {
-            const btnWidth = 150;
-            const btnHeight = 50;
-            const btnX = (canvas.width - btnWidth) / 2;
-            const btnY = (canvas.height - btnHeight) / 2;
-            ctx.fillStyle = "#1c3af6";
-            ctx.beginPath();
-            ctx.moveTo(btnX + 80, btnY + btnHeight / 2 - 26);
-            ctx.arcTo(btnX + btnWidth, btnY, btnX + btnWidth, btnY + btnHeight, 10);
-            ctx.arcTo(btnX + btnWidth, btnY + btnHeight, btnX, btnY + btnHeight, 10);
-            ctx.arcTo(btnX, btnY + btnHeight, btnX, btnY, 10);
-            ctx.arcTo(btnX, btnY, btnX + btnWidth, btnY, 10);
-            ctx.fill();
-            ctx.font = "24px Arial";
-            ctx.fillStyle = "white";
-            ctx.fillText("게임 시작", btnX + 20, btnY + 35);
+          const btnWidth = 150;
+          const btnHeight = 50;
+          const btnX = (canvas.width - btnWidth) / 2;
+          const btnY = (canvas.height - btnHeight) / 2;
+          ctx.fillStyle = "#1c3af6";
+          ctx.beginPath();
+          ctx.moveTo(btnX + 80, btnY + btnHeight / 2 - 26);
+          ctx.arcTo(
+            btnX + btnWidth,
+            btnY,
+            btnX + btnWidth,
+            btnY + btnHeight,
+            10
+          );
+          ctx.arcTo(
+            btnX + btnWidth,
+            btnY + btnHeight,
+            btnX,
+            btnY + btnHeight,
+            10
+          );
+          ctx.arcTo(btnX, btnY + btnHeight, btnX, btnY, 10);
+          ctx.arcTo(btnX, btnY, btnX + btnWidth, btnY, 10);
+          ctx.fill();
+          ctx.font = "24px Arial";
+          ctx.fillStyle = "white";
+          ctx.fillText("게임 시작", btnX + 20, btnY + 35);
         },
 
         // 다시 하기 버튼
         drawRestartButton() {
-            const btnWidth = 150;
-            const btnHeight = 50;
-            const btnX = (canvas.width - btnWidth) / 2;
-            const btnY = (canvas.height - btnHeight) / 2;
-            ctx.fillStyle = "#1c3af6";
-            ctx.beginPath();
-            ctx.moveTo(btnX + 80, btnY + btnHeight / 2 - 26);
-            ctx.arcTo(btnX + btnWidth, btnY, btnX + btnWidth, btnY + btnHeight, 10);
-            ctx.arcTo(btnX + btnWidth, btnY + btnHeight, btnX, btnY + btnHeight, 10);
-            ctx.arcTo(btnX, btnY + btnHeight, btnX, btnY, 10);
-            ctx.arcTo(btnX, btnY, btnX + btnWidth, btnY, 10);
-            ctx.fill();
-            ctx.font = "24px Arial";
-            ctx.fillStyle = "white";
-            ctx.fillText("다시 하기", btnX + 20, btnY + 35);
+          const btnWidth = 150;
+          const btnHeight = 50;
+          const btnX = (canvas.width - btnWidth) / 2;
+          const btnY = (canvas.height - btnHeight) / 2;
+          ctx.fillStyle = "#1c3af6";
+          ctx.beginPath();
+          ctx.moveTo(btnX + 80, btnY + btnHeight / 2 - 26);
+          ctx.arcTo(
+            btnX + btnWidth,
+            btnY,
+            btnX + btnWidth,
+            btnY + btnHeight,
+            10
+          );
+          ctx.arcTo(
+            btnX + btnWidth,
+            btnY + btnHeight,
+            btnX,
+            btnY + btnHeight,
+            10
+          );
+          ctx.arcTo(btnX, btnY + btnHeight, btnX, btnY, 10);
+          ctx.arcTo(btnX, btnY, btnX + btnWidth, btnY, 10);
+          ctx.fill();
+          ctx.font = "24px Arial";
+          ctx.fillStyle = "white";
+          ctx.fillText("다시 하기", btnX + 20, btnY + 35);
         },
 
         // 게임 시작 버튼 클릭시
         ClickGameStartButton(event) {
-            const rect = canvas.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
+          const rect = canvas.getBoundingClientRect();
+          const x = event.clientX - rect.left;
+          const y = event.clientY - rect.top;
 
-            if (!GameManager.gameStarted) {
-                const btnWidth = 150;
-                const btnHeight = 50;
-                const btnX = (canvas.width - btnWidth) / 2;
-                const btnY = (canvas.height - btnHeight) / 2;
-                if (x >= btnX && x <= btnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
-                    GameManager.startGame();
-                }
-            }
-        },
-
-        // 다시 하기 버튼 클릭시
-        ClickRestartButton(event) {
-            const rect = canvas.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-
+          if (!GameManager.gameStarted) {
             const btnWidth = 150;
             const btnHeight = 50;
             const btnX = (canvas.width - btnWidth) / 2;
             const btnY = (canvas.height - btnHeight) / 2;
-            if (x >= btnX && x <= btnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
-                console.log("Asdasd")
-                location.reload();
+            if (
+              x >= btnX &&
+              x <= btnX + btnWidth &&
+              y >= btnY &&
+              y <= btnY + btnHeight
+            ) {
+              GameManager.startGame();
             }
+          }
+        },
+
+        // 다시 하기 버튼 클릭시
+        ClickRestartButton(event) {
+          const rect = canvas.getBoundingClientRect();
+          const x = event.clientX - rect.left;
+          const y = event.clientY - rect.top;
+
+          const btnWidth = 150;
+          const btnHeight = 50;
+          const btnX = (canvas.width - btnWidth) / 2;
+          const btnY = (canvas.height - btnHeight) / 2;
+          if (
+            x >= btnX &&
+            x <= btnX + btnWidth &&
+            y >= btnY &&
+            y <= btnY + btnHeight
+          ) {
+            console.log("Asdasd");
+            location.reload();
+          }
         },
 
         drawScore() {
-            ctx.font = "24px Arial";
-            ctx.fillStyle = "white";
-            ctx.fillText("Score: " + GameManager.score, 10, 30);
+          ctx.font = "24px Arial";
+          ctx.fillStyle = "white";
+          ctx.fillText("Score: " + GameManager.score, 10, 30);
         },
-
 
         // 게임 시작
         startGame() {
-            this.gameStarted = true;
-            this.score = 0;
-            frame();
+          this.gameStarted = true;
+          this.score = 0;
+          frame();
         },
 
         // 게임 종료
         endGame() {
-            const urlParams = new URLSearchParams(window.location.search);
-            var userId = urlParams.get("userId");
+          const urlParams = new URLSearchParams(window.location.search);
+          var userId = urlParams.get("userId");
 
-            this.gameStarted = false;
-            this.drawScore();
-            this.drawRestartButton();
-            canvas.addEventListener("click", GameManager.ClickRestartButton);
+          this.gameStarted = false;
+          this.drawScore();
+          this.drawRestartButton();
+          canvas.addEventListener("click", GameManager.ClickRestartButton);
 
-            fetch("http://54.210.228.54:8080/log", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    "userId": userId,
-                    "gameId": 55,
-                    "gameScore": GameManager.score
-                }),
-            }).then((response) => {
-                console.log(response);
-            });
+          fetch("http://tino-back.tasty-site.com:8080/log", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userId: userId,
+              gameId: 55,
+              gameScore: GameManager.score,
+            }),
+          }).then((response) => {
+            console.log(response);
+          });
         },
         // Game Level
         level: 1,
         levelUp() {
-            this.level++;
-            Cactus.cactusSpeed += this.level / 10;
-            console.log("Cactus.cactusSpeed: " + Cactus.cactusSpeed);
+          this.level++;
+          Cactus.cactusSpeed += this.level / 10;
+          console.log("Cactus.cactusSpeed: " + Cactus.cactusSpeed);
 
-            Cactus.cactusTime = Cactus.cactusTime - 30;
-            if (Cactus.cactusTime < 10) {
-                Cactus.cactusTime = 10;
-            }
-            console.log("Cactus.cactusTime: " + Cactus.cactusTime);
+          Cactus.cactusTime = Cactus.cactusTime - 30;
+          if (Cactus.cactusTime < 10) {
+            Cactus.cactusTime = 10;
+          }
+          console.log("Cactus.cactusTime: " + Cactus.cactusTime);
         },
 
         // Game Score
         score: 0,
         scoreUp() {
-            this.score += this.level;
-            GameManager.drawScore();
-            console.log("score: " + this.score);
+          this.score += this.level;
+          GameManager.drawScore();
+          console.log("score: " + this.score);
         },
-    }
+      };
 
-    input = {
+      input = {
         up: false,
         down: false,
         left: false,
         right: false,
-        space: false
-    }
+        space: false,
+      };
 
-    // event listener (left, right, up, down)
-    // 이벤트 리스너 등록
-    document.addEventListener('keypress'
-        , function (event) {
+      // event listener (left, right, up, down)
+      // 이벤트 리스너 등록
+      document.addEventListener("keypress", function (event) {
+        if (event.key === "a") {
+          input.left = true;
+        }
+        if (event.key === "d") {
+          input.right = true;
+        }
+      });
 
-            if (event.key === 'a') {
-                input.left = true;
-            }
-            if (event.key === 'd') {
-                input.right = true;
-            }
-        });
+      document.addEventListener("keydown", function (event) {
+        // space bar
+        if (event.key === " ") {
+          console.log("space bar");
+          console.log(GameManager.level);
+          GameManager.levelUp();
+        }
+      });
 
-    document.addEventListener('keydown',
-        function (event) {
-            // space bar
-            if (event.key === ' ') {
-                console.log('space bar');
-                console.log(GameManager.level)
-                GameManager.levelUp();
-            }
-        });
+      document.addEventListener("keyup", function (event) {
+        if (event.key === "a") {
+          input.left = false;
+        }
+        if (event.key === "d") {
+          input.right = false;
+        }
+      });
 
-    document.addEventListener('keyup'
-        , function (event) {
-            if (event.key === 'a') {
-                input.left = false;
-            }
-            if (event.key === 'd') {
-                input.right = false;
-            }
-        });
-
-    // player class
-    class Player {
+      // player class
+      class Player {
         static playerList = [];
 
         static playerSpeed = 5;
 
         constructor() {
-            this.x = canvas.width / 2 - 50;
-            this.y = canvas.height - 100;
-            this.width = 50;
-            this.height = 50;
-
+          this.x = canvas.width / 2 - 50;
+          this.y = canvas.height - 100;
+          this.width = 50;
+          this.height = 50;
         }
 
         // 방향키 입력시 이동
         move() {
-            if (input.left) {
-                this.x -= Player.playerSpeed;
-            }
-            if (input.right) {
-                this.x += Player.playerSpeed;
-            }
+          if (input.left) {
+            this.x -= Player.playerSpeed;
+          }
+          if (input.right) {
+            this.x += Player.playerSpeed;
+          }
 
-            // 화면 밖으로 나가지 않도록
-            if (this.x < 0) {
-                this.x = 0;
-            }
-            if (this.x > canvas.width - this.width) {
-                this.x = canvas.width - this.width;
-            }
+          // 화면 밖으로 나가지 않도록
+          if (this.x < 0) {
+            this.x = 0;
+          }
+          if (this.x > canvas.width - this.width) {
+            this.x = canvas.width - this.width;
+          }
         }
 
         shoot() {
-            // 총알 발사
-            Bullet.bulletList.push(new Bullet(this.x + this.width / 2, this.y));
+          // 총알 발사
+          Bullet.bulletList.push(new Bullet(this.x + this.width / 2, this.y));
         }
 
         draw() {
-            ctx.fillStyle = "red";
-            ctx.fillRect(this.x, this.y, this.width, this.height);
+          ctx.fillStyle = "red";
+          ctx.fillRect(this.x, this.y, this.width, this.height);
         }
-    }
+      }
 
-    // 총알 class
-    class Bullet {
+      // 총알 class
+      class Bullet {
         static bulletList = [];
         // damage
         static bulletDamage = 1;
@@ -247,310 +282,327 @@
         static bulletTime = 30;
 
         constructor(x, y) {
-            this.width = 10;
-            this.height = 30;
-            this.x = x - this.width / 2;
-            this.y = y;
+          this.width = 10;
+          this.height = 30;
+          this.x = x - this.width / 2;
+          this.y = y;
         }
 
         move() {
-            this.y -= Bullet.bulletSpeed;
-            if (this.y < 0) {
-                this.destroy();
-            }
+          this.y -= Bullet.bulletSpeed;
+          if (this.y < 0) {
+            this.destroy();
+          }
         }
 
         destroy() {
-            Bullet.bulletList.splice(Bullet.bulletList.indexOf(this), 1);
+          Bullet.bulletList.splice(Bullet.bulletList.indexOf(this), 1);
         }
 
         draw() {
-            ctx.fillStyle = "white";
-            ctx.fillRect(this.x, this.y, this.width, this.height);
+          ctx.fillStyle = "white";
+          ctx.fillRect(this.x, this.y, this.width, this.height);
         }
-    }
+      }
 
+      const player = new Player();
 
-    const player = new Player();
+      Player.playerList.push(player);
 
-    Player.playerList.push(player);
-
-    // 장애물 class
-    class Cactus {
+      // 장애물 class
+      class Cactus {
         static cactusList = [];
         static cactusSpeed = 1 + GameManager.level;
         static cactusTime = 250;
 
         constructor() {
-            this.width = 50;
-            this.height = 50;
-            this.x = Math.floor(Math.random() * (canvas.width - this.width));
-            this.y = -10;
-            // 아이템 확률
-            this.itemProb = 0.66;
+          this.width = 50;
+          this.height = 50;
+          this.x = Math.floor(Math.random() * (canvas.width - this.width));
+          this.y = -10;
+          // 아이템 확률
+          this.itemProb = 0.66;
 
-            // 5% 확률로 아이템 생성
-            this.isItem = Math.random() < this.itemProb;
+          // 5% 확률로 아이템 생성
+          this.isItem = Math.random() < this.itemProb;
 
-            this.maxHealth = 3 + GameManager.level - 1;
-            this.health = this.maxHealth;
+          this.maxHealth = 3 + GameManager.level - 1;
+          this.health = this.maxHealth;
         }
 
         move() {
-            this.y += Cactus.cactusSpeed;
-            if (this.y > canvas.height) {
-                this.destroy();
-                GameManager.endGame();
-            }
+          this.y += Cactus.cactusSpeed;
+          if (this.y > canvas.height) {
+            this.destroy();
+            GameManager.endGame();
+          }
         }
 
         // 장애물과 총알이 충돌했을 때
         collision() {
-            Bullet.bulletList.forEach((bullet) => {
-                if (
-                    // 총알의 x좌표가 장애물의 x좌표보다 크고
-                    bullet.x + bullet.width > this.x &&
-                    // 총알의 x좌표가 장애물의 x좌표 + 장애물의 너비보다 작고
-                    bullet.x < this.x + this.width &&
-                    // 총알의 y좌표가 장애물의 y좌표보다 크고
-                    bullet.y > this.y &&
-                    // 총알의 y좌표가 장애물의 y좌표 + 장애물의 높이보다 작으면
-                    bullet.y < this.y + this.height
-                ) {
-                    bullet.destroy();
-                    this.health -= Bullet.bulletDamage;
+          Bullet.bulletList.forEach((bullet) => {
+            if (
+              // 총알의 x좌표가 장애물의 x좌표보다 크고
+              bullet.x + bullet.width > this.x &&
+              // 총알의 x좌표가 장애물의 x좌표 + 장애물의 너비보다 작고
+              bullet.x < this.x + this.width &&
+              // 총알의 y좌표가 장애물의 y좌표보다 크고
+              bullet.y > this.y &&
+              // 총알의 y좌표가 장애물의 y좌표 + 장애물의 높이보다 작으면
+              bullet.y < this.y + this.height
+            ) {
+              bullet.destroy();
+              this.health -= Bullet.bulletDamage;
 
-                    // 체력이 0이하면 장애물 제거
-                    if (this.health <= 0) {
-                        GameManager.scoreUp();
-                        if (this.isItem) {
-                            console.log("아이템 생성");
-                            Item.itemList.push(new Item(this.x + this.width / 2, this.y + this.height / 2));
-                        }
-                        this.destroy();
-                    }
+              // 체력이 0이하면 장애물 제거
+              if (this.health <= 0) {
+                GameManager.scoreUp();
+                if (this.isItem) {
+                  console.log("아이템 생성");
+                  Item.itemList.push(
+                    new Item(this.x + this.width / 2, this.y + this.height / 2)
+                  );
                 }
-            });
-        }
-
-        destroy() {
-            Cactus.cactusList.splice(Cactus.cactusList.indexOf(this), 1);
-        }
-
-        draw() {
-            // 장애물을 따라다니는 체력바 그리기
-            ctx.fillStyle = "red";
-            ctx.fillRect(this.x, this.y - 10, this.health / this.maxHealth * this.width, 5);
-
-
-            ctx.fillStyle = "green";
-            ctx.fillRect(this.x, this.y, this.width, this.height);
-
-            // 만약 아이템이면
-            if (this.isItem) {
-                ctx.fillStyle = "gold";
-                // 왼쪽 아래 원 그리기
-                ctx.beginPath();
-                ctx.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 4, 0, Math.PI * 2, true);
-                ctx.fill();
-            }
-        }
-    }
-
-    ItemType = {
-        "PlayerSpeed": 0,
-        "ShootGapTime": 1,
-        "BulletDamage": 2,
-        "BulletSpeed": 3,
-    }
-
-    ItemString = {
-        "PlayerSpeed": "이동 속도 증가",
-        "ShootGapTime": "연사 속도 증가",
-        "BulletDamage": "공격력 증가",
-        "BulletSpeed": "탄속 증가",
-    }
-
-    class I_String{
-        static StringList = []
-
-        constructor(x, y, text){
-            this.x = x;
-            this.y = y;
-            this.text = text;
-            this.time = 50;
-        }
-
-        draw() {
-            if (this.time <= 0) {
                 this.destroy();
+              }
             }
-            this.time--;
-            this.y -= 1;
-
-            ctx.font = "24px Arial";
-            ctx.fillStyle = "white";
-            ctx.fillText(this.text, this.x, this.y);
+          });
         }
 
         destroy() {
-            I_String.StringList.splice(I_String.StringList.indexOf(this), 1);
+          Cactus.cactusList.splice(Cactus.cactusList.indexOf(this), 1);
         }
-    }
 
-    class Item {
+        draw() {
+          // 장애물을 따라다니는 체력바 그리기
+          ctx.fillStyle = "red";
+          ctx.fillRect(
+            this.x,
+            this.y - 10,
+            (this.health / this.maxHealth) * this.width,
+            5
+          );
+
+          ctx.fillStyle = "green";
+          ctx.fillRect(this.x, this.y, this.width, this.height);
+
+          // 만약 아이템이면
+          if (this.isItem) {
+            ctx.fillStyle = "gold";
+            // 왼쪽 아래 원 그리기
+            ctx.beginPath();
+            ctx.arc(
+              this.x + this.width / 2,
+              this.y + this.height / 2,
+              this.width / 4,
+              0,
+              Math.PI * 2,
+              true
+            );
+            ctx.fill();
+          }
+        }
+      }
+
+      ItemType = {
+        PlayerSpeed: 0,
+        ShootGapTime: 1,
+        BulletDamage: 2,
+        BulletSpeed: 3,
+      };
+
+      ItemString = {
+        PlayerSpeed: "이동 속도 증가",
+        ShootGapTime: "연사 속도 증가",
+        BulletDamage: "공격력 증가",
+        BulletSpeed: "탄속 증가",
+      };
+
+      class I_String {
+        static StringList = [];
+
+        constructor(x, y, text) {
+          this.x = x;
+          this.y = y;
+          this.text = text;
+          this.time = 50;
+        }
+
+        draw() {
+          if (this.time <= 0) {
+            this.destroy();
+          }
+          this.time--;
+          this.y -= 1;
+
+          ctx.font = "24px Arial";
+          ctx.fillStyle = "white";
+          ctx.fillText(this.text, this.x, this.y);
+        }
+
+        destroy() {
+          I_String.StringList.splice(I_String.StringList.indexOf(this), 1);
+        }
+      }
+
+      class Item {
         static itemList = [];
         static itemSpeed = 2;
         static itemSize = 10;
 
-
         constructor(x, y) {
-            this.x = x
-            this.y = y;
-            this.width = 10;
-            this.height = 10;
-            this.speedX = Item.itemSpeed;
-            this.speedY = Item.itemSpeed;
+          this.x = x;
+          this.y = y;
+          this.width = 10;
+          this.height = 10;
+          this.speedX = Item.itemSpeed;
+          this.speedY = Item.itemSpeed;
 
-            this.itemType = Math.floor(Math.random() * Object.keys(ItemType).length);
+          this.itemType = Math.floor(
+            Math.random() * Object.keys(ItemType).length
+          );
         }
 
         move() {
-            // 벽에 부딪히면 방향 바꾸기
-            if (this.x < 0 || this.x > canvas.width - this.width) {
-                this.speedX *= -1;
-            }
-            if (this.y < 0 || this.y > canvas.height - this.height) {
-                this.speedY *= -1;
-            }
-            this.x += this.speedX;
-            this.y += this.speedY;
+          // 벽에 부딪히면 방향 바꾸기
+          if (this.x < 0 || this.x > canvas.width - this.width) {
+            this.speedX *= -1;
+          }
+          if (this.y < 0 || this.y > canvas.height - this.height) {
+            this.speedY *= -1;
+          }
+          this.x += this.speedX;
+          this.y += this.speedY;
         }
 
         draw() {
-            ctx.fillStyle = "gold";
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, Item.itemSize, 0, Math.PI * 2, true);
-            ctx.fill();
+          ctx.fillStyle = "gold";
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, Item.itemSize, 0, Math.PI * 2, true);
+          ctx.fill();
         }
 
         collision() {
-            Player.playerList.forEach((player) => {
-                // 플레이어와 아이템이 충돌했을 때
-                if (
-                    // 아이템의 오른쪽 x 좌표가 플레이어의 왼쪽 x 좌표보다 크고
-                    this.x + this.width > player.x &&
-                    // 아이템의 왼쪽 x 좌표가 플레이어의 오른쪽 x 좌표보다 작고
-                    this.x < player.x + player.width &&
-                    // 아이템의 아래쪽 y 좌표가 플레이어의 위쪽 y 좌표보다 크고
-                    this.y + this.height > player.y &&
-                    // 아이템의 위쪽 y 좌표가 플레이어의 아래쪽 y 좌표보다 작으면
-                    this.y < player.y + player.height
-                ) {
-                    this.getItem(player.x, player.y);
-                    this.destroy();
-                }
-            });
+          Player.playerList.forEach((player) => {
+            // 플레이어와 아이템이 충돌했을 때
+            if (
+              // 아이템의 오른쪽 x 좌표가 플레이어의 왼쪽 x 좌표보다 크고
+              this.x + this.width > player.x &&
+              // 아이템의 왼쪽 x 좌표가 플레이어의 오른쪽 x 좌표보다 작고
+              this.x < player.x + player.width &&
+              // 아이템의 아래쪽 y 좌표가 플레이어의 위쪽 y 좌표보다 크고
+              this.y + this.height > player.y &&
+              // 아이템의 위쪽 y 좌표가 플레이어의 아래쪽 y 좌표보다 작으면
+              this.y < player.y + player.height
+            ) {
+              this.getItem(player.x, player.y);
+              this.destroy();
+            }
+          });
         }
 
         getItem(x, y) {
-            switch (this.itemType) {
-                case ItemType.PlayerSpeed:
-                    I_String.StringList.push(new I_String(x, y, ItemString.PlayerSpeed));
-                    Player.playerSpeed += 1;
-                    break;
+          switch (this.itemType) {
+            case ItemType.PlayerSpeed:
+              I_String.StringList.push(
+                new I_String(x, y, ItemString.PlayerSpeed)
+              );
+              Player.playerSpeed += 1;
+              break;
 
-                case ItemType.ShootGapTime:
-                    I_String.StringList.push(new I_String(x, y, ItemString.ShootGapTime));
-                    if (Bullet.bulletTime > 5)
-                        Bullet.bulletTime -= 5;
+            case ItemType.ShootGapTime:
+              I_String.StringList.push(
+                new I_String(x, y, ItemString.ShootGapTime)
+              );
+              if (Bullet.bulletTime > 5) Bullet.bulletTime -= 5;
 
-                    break;
-                case ItemType.BulletDamage:
-                    I_String.StringList.push(new I_String(x, y, ItemString.BulletDamage));
-                    Bullet.bulletDamage += 1;
-                    break;
+              break;
+            case ItemType.BulletDamage:
+              I_String.StringList.push(
+                new I_String(x, y, ItemString.BulletDamage)
+              );
+              Bullet.bulletDamage += 1;
+              break;
 
-                case ItemType.BulletSpeed:
-                    I_String.StringList.push(new I_String(x, y, ItemString.BulletSpeed));
-                    Bullet.bulletSpeed += 1;
-                    break;
-            }
+            case ItemType.BulletSpeed:
+              I_String.StringList.push(
+                new I_String(x, y, ItemString.BulletSpeed)
+              );
+              Bullet.bulletSpeed += 1;
+              break;
+          }
         }
 
         destroy() {
-            Item.itemList.splice(Item.itemList.indexOf(this), 1);
+          Item.itemList.splice(Item.itemList.indexOf(this), 1);
         }
-    }
+      }
 
-    // frame function
-    var timer = 0;
+      // frame function
+      var timer = 0;
 
-    var fps = 60;
+      var fps = 60;
 
-    function frame() {
+      function frame() {
         GameManager.drawScore();
         setTimeout(function () {
-            if (!GameManager.gameStarted) return;
-            requestAnimationFrame(frame);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          if (!GameManager.gameStarted) return;
+          requestAnimationFrame(frame);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 총알 생성
-            if (timer % Bullet.bulletTime === 0) {
-                Player.playerList.forEach((a) => {
-                    a.shoot();
-                });
-            }
-
-            // 장애물 생성
-            if (timer % Cactus.cactusTime === 0) {
-                Cactus.cactusList.push(new Cactus());
-            }
-
-
-            // 8초 마다 레벨 업
-            if (timer % 800 === 0) {
-                GameManager.levelUp();
-            }
-
-            Player.playerList.forEach((player) => {
-                player.move();
-                player.draw();
+          // 총알 생성
+          if (timer % Bullet.bulletTime === 0) {
+            Player.playerList.forEach((a) => {
+              a.shoot();
             });
+          }
 
-            Cactus.cactusList.forEach((cactus) => {
-                cactus.move();
-                cactus.draw();
-                cactus.collision();
-            });
+          // 장애물 생성
+          if (timer % Cactus.cactusTime === 0) {
+            Cactus.cactusList.push(new Cactus());
+          }
 
-            Bullet.bulletList.forEach((bullet) => {
-                bullet.move();
-                bullet.draw();
-            });
+          // 8초 마다 레벨 업
+          if (timer % 800 === 0) {
+            GameManager.levelUp();
+          }
 
-            Item.itemList.forEach((item) => {
-                item.move();
-                item.draw();
-                item.collision();
-            });
+          Player.playerList.forEach((player) => {
+            player.move();
+            player.draw();
+          });
 
-            I_String.StringList.forEach((str) => {
-                str.draw();
-            });
+          Cactus.cactusList.forEach((cactus) => {
+            cactus.move();
+            cactus.draw();
+            cactus.collision();
+          });
 
-            timer++;
+          Bullet.bulletList.forEach((bullet) => {
+            bullet.move();
+            bullet.draw();
+          });
+
+          Item.itemList.forEach((item) => {
+            item.move();
+            item.draw();
+            item.collision();
+          });
+
+          I_String.StringList.forEach((str) => {
+            str.draw();
+          });
+
+          timer++;
         }, 1000 / fps);
-    }
+      }
 
-    if (!GameManager.gameStarted) {
+      if (!GameManager.gameStarted) {
         GameManager.drawScore();
         GameManager.drawStartButton();
         canvas.addEventListener("click", GameManager.ClickGameStartButton);
-    }
-    // frame();
-
-</script>
-</body>
-
+      }
+      // frame();
+    </script>
+  </body>
 </html>

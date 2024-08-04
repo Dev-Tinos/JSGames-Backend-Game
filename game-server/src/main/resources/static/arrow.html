@@ -1,254 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arrow Shooting Game</title>
-  <style>
-    canvas {
-      border: 1px solid black;
-      background-color: #000000;
-    }
-  </style>
-</head>
-<body>
-<canvas id="gameCanvas" width="800" height="600"></canvas>
-
-<script>
-  const canvas = document.getElementById("gameCanvas");
-  const ctx = canvas.getContext("2d");
-
-  let gameStarted = false;
-  let arrows = [];
-  let targetAngle = 0;
-  let targetRadius = 70;
-  let score = 0;
-  let random = 0;
-  let fps = 65;
-
-  function drawStartButton() {
-    const btnWidth = 150;
-    const btnHeight = 50;
-    const btnX = (canvas.width - btnWidth) / 2;
-    const btnY = (canvas.height - btnHeight) / 2;
-    ctx.fillStyle = "#830000";
-    ctx.beginPath();
-    ctx.moveTo(btnX + 80, btnY + btnHeight / 2 - 26);
-    ctx.arcTo(btnX + btnWidth, btnY, btnX + btnWidth, btnY + btnHeight, 10);
-    ctx.arcTo(
-            btnX + btnWidth,
-            btnY + btnHeight,
-            btnX,
-            btnY + btnHeight,
-            10
-    );
-    ctx.arcTo(btnX, btnY + btnHeight, btnX, btnY, 10);
-    ctx.arcTo(btnX, btnY, btnX + btnWidth, btnY, 10);
-    ctx.fill();
-    ctx.font = "24px Arial";
-    ctx.fillStyle = "white";
-    ctx.fillText("게임 시작", btnX + 20, btnY + 35);
-  }
-
-  function ClickGameStartButton(event) {
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    if (!gameStarted) {
-      const btnWidth = 150;
-      const btnHeight = 50;
-      const btnX = (canvas.width - btnWidth) / 2;
-      const btnY = (canvas.height - btnHeight) / 2;
-      if (
-              x >= btnX &&
-              x <= btnX + btnWidth &&
-              y >= btnY &&
-              y <= btnY + btnHeight
-      ) {
-        startGame();
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arrow Shooting Game</title>
+    <style>
+      canvas {
+        border: 1px solid black;
+        background-color: #000000;
       }
-      return;
-    }
-  }
+    </style>
+  </head>
+  <body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-  function startGame() {
-    gameStarted = true;
-    arrows = [];
-    targetAngle = 0;
-    score = 0;
-    animate();
-  }
+    <script>
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
 
-  function endGame() {
-    gameStarted = false;
+      let gameStarted = false;
+      let arrows = [];
+      let targetAngle = 0;
+      let targetRadius = 70;
+      let score = 0;
+      let random = 0;
+      let fps = 65;
 
-    fetch("http://54.210.228.54:8080/log", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: "1",
-        gameId: 53,
-        gameScore: score,
-      }),
-    }).then((response) => {
-      console.log(response);
-    });
-    drawStartButton();
-  }
-
-  function drawScore() {
-    ctx.font = "24px Arial";
-    ctx.fillStyle = "white";
-    ctx.fillText("Score: " + score, 10, 30);
-  }
-
-  function drawArrow(arrow) {
-    ctx.save();
-    ctx.translate(canvas.width / 2, canvas.height / 2);
-    ctx.rotate(arrow.angle);
-
-    // 사각형을 그리기 위한 코드
-    // 예를 들어, 사각형의 중심이 targetRadius만큼 떨어진 위치에 있고, 너비와 높이가 10인 사각형을 그립니다.
-
-    ctx.beginPath();
-    var rectWidth = 2;
-    var rectHeight = 120;
-    ctx.rect(
-            -rectWidth / 2,
-            -targetRadius - rectHeight,
-            rectWidth,
-            rectHeight
-    );
-    ctx.closePath(); // 경로 닫기
-    ctx.fillStyle = "white";
-    ctx.fill();
-
-    var width = 120;
-    var height = 20;
-    ctx.beginPath();
-    ctx.moveTo(-5, -targetRadius - 5); // 화살표 꼬리 시작점
-    ctx.lineTo(5, -targetRadius - 5); // 화살표 꼬리 끝점
-    ctx.lineTo(0, -targetRadius + 5); // 화살표 머리 끝점
-    ctx.closePath(); // 경로 닫기
-    ctx.fillStyle = "white";
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.moveTo(0, -targetRadius - rectHeight + 2);
-    ctx.lineTo(0, -targetRadius - rectHeight + 10);
-    ctx.lineTo(5, -targetRadius - rectHeight + 5);
-    ctx.lineTo(5, -targetRadius - rectHeight - 2);
-    ctx.closePath(); // 경로 닫기
-    ctx.fillStyle = "white";
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.moveTo(0, -targetRadius - rectHeight + 2);
-    ctx.lineTo(0, -targetRadius - rectHeight + 10);
-    ctx.lineTo(-5, -targetRadius - rectHeight + 5);
-    ctx.lineTo(-5, -targetRadius - rectHeight - 2);
-    ctx.closePath(); // 경로 닫기
-    ctx.fillStyle = "white";
-    ctx.fill();
-
-    ctx.restore();
-  }
-
-  function drawArrowTest() {
-    ctx.save();
-    ctx.translate(canvas.width / 2, canvas.height / 2);
-    ctx.rotate(0);
-
-    var width = 120;
-    var height = 20;
-    ctx.beginPath();
-    ctx.moveTo(-5, -targetRadius - 5); // 화살표 꼬리 시작점
-    ctx.lineTo(5, -targetRadius - 5); // 화살표 꼬리 끝점
-    ctx.lineTo(0, -targetRadius + 5); // 화살표 머리 끝점
-    ctx.closePath(); // 경로 닫기
-    ctx.fillStyle = "red";
-
-    ctx.fill();
-    ctx.restore();
-  }
-
-  function drawTarget() {
-    ctx.beginPath();
-    ctx.arc(
-            canvas.width / 2,
-            canvas.height / 2,
-            targetRadius,
-            0,
-            Math.PI * 2
-    );
-    ctx.fillStyle = "white";
-    ctx.fill();
-  }
-
-  function updatedraw(angle) {
-    targetAngle += angle;
-    arrows.forEach((arrow) => {
-      arrow.angle = (arrow.angle + angle) % (Math.PI * 2);
-    });
-  }
-
-  function updateGame() {
-    if (random > 50) {
-      updatedraw(random / 1000);
-      random--;
-    } else if (random > 0) {
-      updatedraw(-random / 1000);
-      random--;
-    } else {
-      random = Math.floor(Math.random() * 100);
-    }
-  }
-
-  function checkCollision() {
-    drawArrow(arrows[score]);
-    for (let i = 0; i < arrows.length - 1; i++) {
-      if (Math.abs(arrows[i].angle - arrows[score].angle) < 0.1) {
-        endGame();
+      function drawStartButton() {
+        const btnWidth = 150;
+        const btnHeight = 50;
+        const btnX = (canvas.width - btnWidth) / 2;
+        const btnY = (canvas.height - btnHeight) / 2;
+        ctx.fillStyle = "#830000";
+        ctx.beginPath();
+        ctx.moveTo(btnX + 80, btnY + btnHeight / 2 - 26);
+        ctx.arcTo(btnX + btnWidth, btnY, btnX + btnWidth, btnY + btnHeight, 10);
+        ctx.arcTo(
+          btnX + btnWidth,
+          btnY + btnHeight,
+          btnX,
+          btnY + btnHeight,
+          10
+        );
+        ctx.arcTo(btnX, btnY + btnHeight, btnX, btnY, 10);
+        ctx.arcTo(btnX, btnY, btnX + btnWidth, btnY, 10);
+        ctx.fill();
+        ctx.font = "24px Arial";
+        ctx.fillStyle = "white";
+        ctx.fillText("게임 시작", btnX + 20, btnY + 35);
       }
-    }
-  }
 
-  function animate() {
-    setTimeout(function () {
-      if (!gameStarted) return;
+      function ClickGameStartButton(event) {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawArrowTest();
-      drawTarget();
-      arrows.forEach(drawArrow);
-      drawScore();
-      updateGame();
-      requestAnimationFrame(animate);
-    }, 1000 / fps);
-  }
-
-  document.addEventListener("keydown", function (event) {
-    if (event.key === "ArrowDown" || event.key === " ") {
-      if (gameStarted) {
-        arrows.push({ angle: 0 });
-        checkCollision();
-        score++;
+        if (!gameStarted) {
+          const btnWidth = 150;
+          const btnHeight = 50;
+          const btnX = (canvas.width - btnWidth) / 2;
+          const btnY = (canvas.height - btnHeight) / 2;
+          if (
+            x >= btnX &&
+            x <= btnX + btnWidth &&
+            y >= btnY &&
+            y <= btnY + btnHeight
+          ) {
+            startGame();
+          }
+          return;
+        }
       }
-    }
-  });
-  drawStartButton();
-  canvas.addEventListener("click", ClickGameStartButton);
-  document.addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-      if (!gameStarted) {
-        startGame();
+
+      function startGame() {
+        gameStarted = true;
+        arrows = [];
+        targetAngle = 0;
+        score = 0;
+        animate();
       }
-    }
-  });
-  drawGame();
-</script>
-</body>
+
+      function endGame() {
+        gameStarted = false;
+        const urlParams = new URLSearchParams(window.location.search);
+        var userId = urlParams.get("userId");
+        if (userId === null) {
+          drawStartButton();
+        } else {
+          fetch("http://tino-back.tasty-site.com:8080/log", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userId: userId,
+              gameId: 53,
+              gameScore: score,
+            }),
+          }).then((response) => {
+            console.log(response);
+          });
+          drawStartButton();
+        }
+      }
+
+      function drawScore() {
+        ctx.font = "24px Arial";
+        ctx.fillStyle = "white";
+        ctx.fillText("Score: " + score, 10, 30);
+      }
+
+      function drawArrow(arrow) {
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(arrow.angle);
+
+        // 사각형을 그리기 위한 코드
+        // 예를 들어, 사각형의 중심이 targetRadius만큼 떨어진 위치에 있고, 너비와 높이가 10인 사각형을 그립니다.
+
+        ctx.beginPath();
+        var rectWidth = 2;
+        var rectHeight = 120;
+        ctx.rect(
+          -rectWidth / 2,
+          -targetRadius - rectHeight,
+          rectWidth,
+          rectHeight
+        );
+        ctx.closePath(); // 경로 닫기
+        ctx.fillStyle = "white";
+        ctx.fill();
+
+        var width = 120;
+        var height = 20;
+        ctx.beginPath();
+        ctx.moveTo(-5, -targetRadius - 5); // 화살표 꼬리 시작점
+        ctx.lineTo(5, -targetRadius - 5); // 화살표 꼬리 끝점
+        ctx.lineTo(0, -targetRadius + 5); // 화살표 머리 끝점
+        ctx.closePath(); // 경로 닫기
+        ctx.fillStyle = "white";
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(0, -targetRadius - rectHeight + 2);
+        ctx.lineTo(0, -targetRadius - rectHeight + 10);
+        ctx.lineTo(5, -targetRadius - rectHeight + 5);
+        ctx.lineTo(5, -targetRadius - rectHeight - 2);
+        ctx.closePath(); // 경로 닫기
+        ctx.fillStyle = "white";
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(0, -targetRadius - rectHeight + 2);
+        ctx.lineTo(0, -targetRadius - rectHeight + 10);
+        ctx.lineTo(-5, -targetRadius - rectHeight + 5);
+        ctx.lineTo(-5, -targetRadius - rectHeight - 2);
+        ctx.closePath(); // 경로 닫기
+        ctx.fillStyle = "white";
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      function drawArrowTest() {
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(0);
+
+        var width = 120;
+        var height = 20;
+        ctx.beginPath();
+        ctx.moveTo(-5, -targetRadius - 5); // 화살표 꼬리 시작점
+        ctx.lineTo(5, -targetRadius - 5); // 화살표 꼬리 끝점
+        ctx.lineTo(0, -targetRadius + 5); // 화살표 머리 끝점
+        ctx.closePath(); // 경로 닫기
+        ctx.fillStyle = "red";
+
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function drawTarget() {
+        ctx.beginPath();
+        ctx.arc(
+          canvas.width / 2,
+          canvas.height / 2,
+          targetRadius,
+          0,
+          Math.PI * 2
+        );
+        ctx.fillStyle = "white";
+        ctx.fill();
+      }
+
+      function updatedraw(angle) {
+        targetAngle += angle;
+        arrows.forEach((arrow) => {
+          arrow.angle = (arrow.angle + angle) % (Math.PI * 2);
+        });
+      }
+
+      function updateGame() {
+        if (random > 50) {
+          updatedraw(random / 1000);
+          random--;
+        } else if (random > 0) {
+          updatedraw(-random / 1000);
+          random--;
+        } else {
+          random = Math.floor(Math.random() * 100);
+        }
+      }
+
+      function checkCollision() {
+        drawArrow(arrows[score]);
+        for (let i = 0; i < arrows.length - 1; i++) {
+          if (Math.abs(arrows[i].angle - arrows[score].angle) < 0.1) {
+            endGame();
+          }
+        }
+      }
+
+      function animate() {
+        setTimeout(function () {
+          if (!gameStarted) return;
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          drawArrowTest();
+          drawTarget();
+          arrows.forEach(drawArrow);
+          drawScore();
+          updateGame();
+          requestAnimationFrame(animate);
+        }, 1000 / fps);
+      }
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "ArrowDown" || event.key === " ") {
+          if (gameStarted) {
+            arrows.push({ angle: 0 });
+            checkCollision();
+            score++;
+          }
+        }
+      });
+      drawStartButton();
+      canvas.addEventListener("click", ClickGameStartButton);
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          if (!gameStarted) {
+            startGame();
+          }
+        }
+      });
+      drawGame();
+    </script>
+  </body>
 </html>

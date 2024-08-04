@@ -1,271 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>qweasd</title>
-  <style>
-    canvas {
-      border: 1px solid black;
-      background-color: #000000;
-    }
-  </style>
-</head>
-<body>
-<canvas id="gameCanvas" width="800" height="600"></canvas>
-
-<script>
-  const canvas = document.getElementById("gameCanvas");
-  const ctx = canvas.getContext("2d");
-
-  let gameStarted = false;
-  let score = 0;
-  let timeLeft = 8;
-  let defaultTime = timeLeft;
-
-  const characters = ["q", "w", "e", "a", "s", "d"];
-  let currentSequence = [];
-  let currentIndex = 0;
-
-  function drawStartButton() {
-    const btnWidth = 150;
-    const btnHeight = 50;
-    const btnX = (canvas.width - btnWidth) / 2;
-    const btnY = (canvas.height - btnHeight) / 2;
-    ctx.fillStyle = "#830000";
-    ctx.beginPath();
-    ctx.moveTo(btnX + 80, btnY + btnHeight / 2 - 26);
-    ctx.arcTo(btnX + btnWidth, btnY, btnX + btnWidth, btnY + btnHeight, 10);
-    ctx.arcTo(
-            btnX + btnWidth,
-            btnY + btnHeight,
-            btnX,
-            btnY + btnHeight,
-            10
-    );
-    ctx.arcTo(btnX, btnY + btnHeight, btnX, btnY, 10);
-    ctx.arcTo(btnX, btnY, btnX + btnWidth, btnY, 10);
-    ctx.fill();
-    ctx.font = "24px Arial";
-    ctx.fillStyle = "white";
-    ctx.fillText("게임 시작", btnX + 20, btnY + 35);
-  }
-
-  function ClickGameStartButton(event) {
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    if (!gameStarted) {
-      const btnWidth = 150;
-      const btnHeight = 50;
-      const btnX = (canvas.width - btnWidth) / 2;
-      const btnY = (canvas.height - btnHeight) / 2;
-      if (
-              x >= btnX &&
-              x <= btnX + btnWidth &&
-              y >= btnY &&
-              y <= btnY + btnHeight
-      ) {
-        startGame();
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>qweasd</title>
+    <style>
+      canvas {
+        border: 1px solid black;
+        background-color: #000000;
       }
-      return;
-    }
-  }
+    </style>
+  </head>
+  <body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-  var intervalID;
+    <script>
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
 
-  function startGame() {
-    gameStarted = true;
-    score = 0;
-    difine = 5;
-    timeLeft = defaultTime;
-    intervalID = setInterval(time, 10);
-    generateSequence(); // 게임 시작 시 문자 시퀀스 생성
-    animate();
-  }
+      let gameStarted = false;
+      let score = 0;
+      let timeLeft = 8;
+      let defaultTime = timeLeft;
 
-  function endGame() {
-    gameStarted = false;
-    defaultTime = 8;
-    timeLeft = 8;
-    clearInterval(intervalID);
-    fetch("http://54.210.228.54:8080/log", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: "1",
-        gameId: 57,
-        gameScore: score,
-      }),
-    }).then((response) => {
-      console.log(response);
-    });
-    drawStartButton();
-  }
+      const characters = ["q", "w", "e", "a", "s", "d"];
+      let currentSequence = [];
+      let currentIndex = 0;
 
-  function drawScore() {
-    ctx.font = "24px Arial";
-    ctx.fillStyle = "white";
-    ctx.fillText("Score: " + score, 10, 30);
-
-    ctx.fillText("Life: " + difine, 10, 60);
-  }
-
-  function animate() {
-    if (!gameStarted) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawGame();
-    drawScore();
-    requestAnimationFrame(animate);
-  }
-
-  function drawGame() {
-    drawbar();
-    drawTimebar();
-    drawKeyboardBoxes();
-  }
-
-  function drawbar() {
-    // 바의 위치와 크기 설정
-    const barWidth = 400;
-    const barHeight = 20;
-    const barX = (canvas.width - barWidth) / 2;
-    const barY = canvas.height - 450; // 캔버스 하단에서 30px 위에 위치
-
-    // 바의 색상 설정
-    ctx.fillStyle = "#FFFFFF"; // 하얀색으로 설정
-
-    // 바 그리기
-    ctx.fillRect(barX, barY, barWidth, barHeight);
-  }
-
-  function drawTimebar() {
-    // 바의 너비를 시간에 따라 조정
-    const barWidth = 395 * (timeLeft / defaultTime);
-    const barHeight = 17;
-    const barX = (canvas.width - 395) / 2; // 바의 x 좌표를 고정
-    const barY = canvas.height - 448; // 캔버스 하단에서 450px 위에 위치
-
-    // 선형 그라데이션 생성
-    var gradient = ctx.createLinearGradient(
-            barX,
-            barY,
-            barX + barWidth,
-            barY
-    );
-
-    // 그라데이션에 여러 색상 추가
-    gradient.addColorStop(0, "orange");
-    gradient.addColorStop(0.5, "yellow");
-    gradient.addColorStop(1, "orange");
-
-    // 바의 색상으로 그라데이션 설정
-    ctx.fillStyle = gradient;
-
-    // 바 그리기
-    ctx.fillRect(barX, barY, barWidth, barHeight);
-  }
-
-  //0.1초마다 실행되는 함수
-  function time() {
-    if (timeLeft > 0.01) {
-      timeLeft -= 0.01;
-    } else {
-      endGame();
-    }
-  }
-
-  function drawKeyboardBoxes() {
-    // 각 상자의 크기 설정
-    const boxWidth = 50;
-    const boxHeight = 50;
-    const gap = 20; // 상자 사이의 간격
-
-    // 상자 7개를 그리기 위한 전체 너비 계산
-    const totalWidth = boxWidth * 7 + gap * 6;
-
-    // 시작점 계산 (가운데 정렬을 위해)
-    let startX = (canvas.width - totalWidth) / 2;
-    const startY = (canvas.height - boxHeight) / 2 - 70; // 캔버스 중앙에 위치
-
-    // 상자 색상 설정
-
-    // 7개의 상자 그리기
-    for (let i = 0; i < 7; i++) {
-      if (i == currentIndex) ctx.fillStyle = "red"; // 빨간색으로 설정
-      else ctx.fillStyle = "gray"; // 검은색으로 설정
-      ctx.fillRect(startX, startY, boxWidth, boxHeight);
-
-      ctx.font = "20px Arial";
-      ctx.fillStyle = "white";
-      const textX =
-              startX +
-              boxWidth / 2 -
-              ctx.measureText(currentSequence[i]).width / 2;
-      const textY = startY + boxHeight / 2 + 7; // 문자를 상자 가운데에 위치시킵니다.
-      ctx.fillText(currentSequence[i], textX, textY);
-
-      startX += boxWidth + gap; // 다음 상자의 시작점 계산
-    }
-  }
-
-  function generateSequence() {
-    currentSequence = [];
-    for (let i = 0; i < 7; i++) {
-      const randomChar =
-              characters[Math.floor(Math.random() * characters.length)];
-      currentSequence.push(randomChar);
-    }
-  }
-
-  let difine = 5;
-  function checkCharacter(key) {
-    if (difine < 2) {
-      difine--;
-      animate();
-      endGame();
-    }
-    if (key === currentSequence[currentIndex]) {
-      currentIndex++;
-      score++;
-      if (defaultTime > timeLeft + 0.5) {
-        timeLeft += 0.5;
+      function drawStartButton() {
+        const btnWidth = 150;
+        const btnHeight = 50;
+        const btnX = (canvas.width - btnWidth) / 2;
+        const btnY = (canvas.height - btnHeight) / 2;
+        ctx.fillStyle = "#830000";
+        ctx.beginPath();
+        ctx.moveTo(btnX + 80, btnY + btnHeight / 2 - 26);
+        ctx.arcTo(btnX + btnWidth, btnY, btnX + btnWidth, btnY + btnHeight, 10);
+        ctx.arcTo(
+          btnX + btnWidth,
+          btnY + btnHeight,
+          btnX,
+          btnY + btnHeight,
+          10
+        );
+        ctx.arcTo(btnX, btnY + btnHeight, btnX, btnY, 10);
+        ctx.arcTo(btnX, btnY, btnX + btnWidth, btnY, 10);
+        ctx.fill();
+        ctx.font = "24px Arial";
+        ctx.fillStyle = "white";
+        ctx.fillText("게임 시작", btnX + 20, btnY + 35);
       }
-      if (currentIndex === currentSequence.length) {
+
+      function ClickGameStartButton(event) {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        if (!gameStarted) {
+          const btnWidth = 150;
+          const btnHeight = 50;
+          const btnX = (canvas.width - btnWidth) / 2;
+          const btnY = (canvas.height - btnHeight) / 2;
+          if (
+            x >= btnX &&
+            x <= btnX + btnWidth &&
+            y >= btnY &&
+            y <= btnY + btnHeight
+          ) {
+            startGame();
+          }
+          return;
+        }
+      }
+
+      var intervalID;
+
+      function startGame() {
+        gameStarted = true;
+        score = 0;
         difine = 5;
-        currentIndex = 0;
-        defaultTime = 8 - Math.log(score) * 1.6; // 시간을 초기화합니다.
         timeLeft = defaultTime;
-        generateSequence(); // 새로운 문자 시퀀스 생성
+        intervalID = setInterval(time, 10);
+        generateSequence(); // 게임 시작 시 문자 시퀀스 생성
+        animate();
       }
-    } else {
-      difine--;
-      score -= currentIndex;
-      currentIndex = 0;
-    }
-  }
 
-  document.addEventListener("keydown", function (event) {
-    if (gameStarted) {
-      checkCharacter(event.key);
-    }
-  });
-
-  generateSequence(); // 초기 문자 시퀀스 생성
-  drawStartButton();
-  drawbar();
-  canvas.addEventListener("click", ClickGameStartButton);
-  document.addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-      if (!gameStarted) {
-        startGame();
+      function endGame() {
+        gameStarted = false;
+        defaultTime = 8;
+        timeLeft = 8;
+        const urlParams = new URLSearchParams(window.location.search);
+        var userId = urlParams.get("userId");
+        clearInterval(intervalID);
+        if (userId === null) {
+          drawStartButton();
+        } else {
+          fetch("http://tino-back.tasty-site.com:8080/log", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userId: userId,
+              gameId: 57,
+              gameScore: score,
+            }),
+          }).then((response) => {
+            console.log(response);
+          });
+        }
+        drawStartButton();
       }
-    }
-  });
-</script>
-</body>
+
+      function drawScore() {
+        ctx.font = "24px Arial";
+        ctx.fillStyle = "white";
+        ctx.fillText("Score: " + score, 10, 30);
+
+        ctx.fillText("Life: " + difine, 10, 60);
+      }
+
+      function animate() {
+        if (!gameStarted) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawGame();
+        drawScore();
+        requestAnimationFrame(animate);
+      }
+
+      function drawGame() {
+        drawbar();
+        drawTimebar();
+        drawKeyboardBoxes();
+      }
+
+      function drawbar() {
+        // 바의 위치와 크기 설정
+        const barWidth = 400;
+        const barHeight = 20;
+        const barX = (canvas.width - barWidth) / 2;
+        const barY = canvas.height - 450; // 캔버스 하단에서 30px 위에 위치
+
+        // 바의 색상 설정
+        ctx.fillStyle = "#FFFFFF"; // 하얀색으로 설정
+
+        // 바 그리기
+        ctx.fillRect(barX, barY, barWidth, barHeight);
+      }
+
+      function drawTimebar() {
+        // 바의 너비를 시간에 따라 조정
+        const barWidth = 395 * (timeLeft / defaultTime);
+        const barHeight = 17;
+        const barX = (canvas.width - 395) / 2; // 바의 x 좌표를 고정
+        const barY = canvas.height - 448; // 캔버스 하단에서 450px 위에 위치
+
+        // 선형 그라데이션 생성
+        var gradient = ctx.createLinearGradient(
+          barX,
+          barY,
+          barX + barWidth,
+          barY
+        );
+
+        // 그라데이션에 여러 색상 추가
+        gradient.addColorStop(0, "orange");
+        gradient.addColorStop(0.5, "yellow");
+        gradient.addColorStop(1, "orange");
+
+        // 바의 색상으로 그라데이션 설정
+        ctx.fillStyle = gradient;
+
+        // 바 그리기
+        ctx.fillRect(barX, barY, barWidth, barHeight);
+      }
+
+      //0.1초마다 실행되는 함수
+      function time() {
+        if (timeLeft > 0.01) {
+          timeLeft -= 0.01;
+        } else {
+          endGame();
+        }
+      }
+
+      function drawKeyboardBoxes() {
+        // 각 상자의 크기 설정
+        const boxWidth = 50;
+        const boxHeight = 50;
+        const gap = 20; // 상자 사이의 간격
+
+        // 상자 7개를 그리기 위한 전체 너비 계산
+        const totalWidth = boxWidth * 7 + gap * 6;
+
+        // 시작점 계산 (가운데 정렬을 위해)
+        let startX = (canvas.width - totalWidth) / 2;
+        const startY = (canvas.height - boxHeight) / 2 - 70; // 캔버스 중앙에 위치
+
+        // 상자 색상 설정
+
+        // 7개의 상자 그리기
+        for (let i = 0; i < 7; i++) {
+          if (i == currentIndex) ctx.fillStyle = "red"; // 빨간색으로 설정
+          else ctx.fillStyle = "gray"; // 검은색으로 설정
+          ctx.fillRect(startX, startY, boxWidth, boxHeight);
+
+          ctx.font = "20px Arial";
+          ctx.fillStyle = "white";
+          const textX =
+            startX +
+            boxWidth / 2 -
+            ctx.measureText(currentSequence[i]).width / 2;
+          const textY = startY + boxHeight / 2 + 7; // 문자를 상자 가운데에 위치시킵니다.
+          ctx.fillText(currentSequence[i], textX, textY);
+
+          startX += boxWidth + gap; // 다음 상자의 시작점 계산
+        }
+      }
+
+      function generateSequence() {
+        currentSequence = [];
+        for (let i = 0; i < 7; i++) {
+          const randomChar =
+            characters[Math.floor(Math.random() * characters.length)];
+          currentSequence.push(randomChar);
+        }
+      }
+
+      let difine = 5;
+      function checkCharacter(key) {
+        if (difine < 2) {
+          difine--;
+          animate();
+          endGame();
+        }
+        if (key === currentSequence[currentIndex]) {
+          currentIndex++;
+          score++;
+          if (defaultTime > timeLeft + 0.5) {
+            timeLeft += 0.5;
+          }
+          if (currentIndex === currentSequence.length) {
+            difine = 5;
+            currentIndex = 0;
+            defaultTime = 8 - Math.log(score) * 1.6; // 시간을 초기화합니다.
+            timeLeft = defaultTime;
+            generateSequence(); // 새로운 문자 시퀀스 생성
+          }
+        } else {
+          difine--;
+          score -= currentIndex;
+          currentIndex = 0;
+        }
+      }
+
+      document.addEventListener("keydown", function (event) {
+        if (gameStarted) {
+          checkCharacter(event.key);
+        }
+      });
+
+      generateSequence(); // 초기 문자 시퀀스 생성
+      drawStartButton();
+      drawbar();
+      canvas.addEventListener("click", ClickGameStartButton);
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          if (!gameStarted) {
+            startGame();
+          }
+        }
+      });
+    </script>
+  </body>
 </html>
